@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grade Manager</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>📊 Grade Manager</h1>
+
+      <!-- Form Input Student -->
+      <div class="card">
+        <h2>Add Student</h2>
+        <div class="form-group">
+          <input
+            type="text"
+            id="inputName"
+            placeholder="Student name..."
+            maxlength="50"
+          />
+          <input
+            type="number"
+            id="inputScore"
+            placeholder="Score (0-100)"
+            min="0"
+            max="100"
+          />
+          <button id="btnAdd">+ Add</button>
+        </div>
+        <p id="errorMessage" class="error-text"></p>
+      </div>
+
+      <!-- Statistic -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="statTotal">0</div>
+          <div class="stat-label">Total Students</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statAverage">-</div>
+          <div class="stat-label">Average</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statHighest">-</div>
+          <div class="stat-label">Highest</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number" id="statLowest">-</div>
+          <div class="stat-label">Lowest</div>
+        </div>
+      </div>
+
+      <!-- Toolbar: Search, Sort, Export -->
+      <div class="card">
+        <div class="toolbar">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="🔍 Search student..."
+          />
+          <div class="toolbar-right">
+            <select id="sortSelect">
+              <option value="">Sort by...</option>
+              <option value="name-asc">Name A-Z</option>
+              <option value="name-desc">Name Z-A</option>
+              <option value="score-desc">Score High-Low</option>
+              <option value="score-asc">Score Low-High</option>
+            </select>
+            <button id="btnExport">📥 Export CSV</button>
+          </div>
+        </div>
+
+        <!-- Filter -->
+        <div class="filter-group">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="passed">Passed ✅</button>
+          <button class="filter-btn" data-filter="passed">Failed ❌</button>
+        </div>
+      </div>
+
+      <!-- Student Table -->
+      <div class="card">
+        <h2>Student List</h2>
+        <div id="emptyMessage" class="empty-message">
+          No student data yet. Add a new student above!
+        </div>
+        <table id="studentTable">
+          <thead>
+            <tr>
+              <th>No</th>
+              <th>Name</th>
+              <th>Score</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="editModal" class="modal hidden">
+      <div class="modal-content">
+        <h2>Edit Student</h2>
+        <input type="text" id="editName" placeholder="Student name..." />
+        <input
+          type="number"
+          id="editScore"
+          placeholder="Score (0-100)"
+          min="0"
+          max="100"
+        />
+        <p id="editError" class="error-text"></p>
+        <div class="modal-buttons">
+          <button id="btnSaveEdit">Save</button>
+          <button id="btnCancelEdit">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
