@@ -22,7 +22,7 @@ function loadFromStorage() {
 
 // CORE FUNCTIONS
 function addStudent() {
-  const name = document.getElementById("inputName").ariaValueMax.trim();
+  const name = document.getElementById("inputName").value.trim();
   const scoreInput = document.getElementById("inputScore").value;
   const score = parseFloat(scoreInput);
   const errorEl = document.getElementById("errorMessage");
@@ -176,8 +176,8 @@ function getFilteredAndSortedData() {
     data.sort((a, b) => {
       if (sortConfig.field === "name") {
         return sortConfig.direction === "asc"
-          ? a.name.localCompare(b.name)
-          : b.name.localCompare(a.name);
+          ? a.name.localeCompare(b.name)
+          : b.name.localeCompare(a.name);
       }
       if (sortConfig.field === "score") {
         return sortConfig.direction === "asc"
@@ -260,3 +260,74 @@ function updateStats() {
   document.getElementById("statHighest").textContent = highest;
   document.getElementById("statLowest").textContent = lowest;
 }
+
+// EVENT LISTENERS
+
+// Add student
+document.getElementById("btnAdd").addEventListener("click", addStudent);
+
+// Enter key in input
+document.getElementById("inputName").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") addStudent();
+});
+document.getElementById("inputScore").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") addStudent();
+});
+
+// Filter buttons
+document.querySelectorAll(".filter-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document
+      .querySelectorAll(".filter-btn")
+      .forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    activeFilter = btn.dataset.filter;
+    renderTable();
+  });
+});
+
+// Search
+document.getElementById("searchInput").addEventListener("input", (e) => {
+  searchQuery = e.target.value;
+  renderTable();
+});
+
+// Sort
+document.getElementById("sortSelect").addEventListener("change", (e) => {
+  const value = e.target.value;
+  if (!value) {
+    sortConfig = { field: null, direction: "asc" };
+  } else {
+    const [field, direction] = value.split("-");
+    sortConfig = { field, direction };
+  }
+  renderTable();
+});
+
+// Export CSV
+document.getElementById("btnExport").addEventListener("click", exportCSV);
+
+// Edit modal buttons
+document.getElementById("btnSaveEdit").addEventListener("click", saveEdit);
+document
+  .getElementById("btnCancelEdit")
+  .addEventListener("click", closeEditModal);
+
+// Close modal when clicking outside
+document.getElementById("editModal").addEventListener("click", (e) => {
+  if (e.target === document.getElementById("editModal")) {
+    closeEditModal();
+  }
+});
+
+// Edit modal: Enter key to save
+document.getElementById("editScore").addEventListener("keypress", (e) => {
+  if (e.key === "Enter") saveEdit();
+});
+
+// INIT
+loadFromStorage();
+renderTable();
+updateStats();
+
+console.log("Grade Manager ready!");
