@@ -152,3 +152,111 @@ function exportCSV() {
   a.click();
   URL.revokeObjectURL(url);
 }
+
+// RENDER FUNCTION
+function getFilteredAndSortedData() {
+  let data = [...studentList];
+
+  // Filter by status
+  if (activeFilter === "passed") {
+    data = data.filter((s) => s.passed);
+  } else if (activeFilter === "failed") {
+    data = data.filter((s) => !s.passed);
+  }
+
+  // Filter by search query
+  if (searchQuery) {
+    data = data.filter((s) =>
+      s.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+  }
+
+  // Sort
+  if (sortConfig.field) {
+    data.sort((a, b) => {
+      if (sortConfig.field === "name") {
+        return sortConfig.direction === "asc"
+          ? a.name.localCompare(b.name)
+          : b.name.localCompare(a.name);
+      }
+      if (sortConfig.field === "score") {
+        return sortConfig.direction === "asc"
+          ? a.score - b.score
+          : b.score - a.score;
+      }
+      return 0;
+    });
+  }
+
+  return data;
+}
+
+function renderTable() {
+  const tbody = document.getElementById("tableBody");
+  const table = document.getElementById("studentTable");
+  const emptyMessage = document.getElementById("emptyMessage");
+  const data = getFilteredAndSortedData();
+
+  if (studentList.length === 0) {
+    emptyMessage.style.display = "block";
+    emptyMessage.textContent = "No student data yet. Add a new student above!";
+    table.style.display = "none";
+    return;
+  }
+
+  if (data.length === 0) {
+    emptyMessage.style.display = "block";
+    emptyMessage.textContent = "No student match the current filter/search.";
+    table.style.display = "none";
+    return;
+  }
+
+  emptyMessage.style.display = "none";
+  table.style.display = "table";
+
+  let rows = "";
+  for (let i = 0; i < data.length; i++) {
+    const s = data[i];
+    const badge = s.passed
+      ? `<span class="badge badge-passed">✅ Passed</span>`
+      : `<span class="badge badge-failed">❌ Failed</span>`;
+
+    rows += `
+        <tr>
+            <td>${i + 1}</td>
+            <td>${s.name}</td>
+            <td>${s.score}</td>
+            <td>${badge}</td>
+            <td>
+                <button class="btn-edit" onclick="openEditModal(${s.id})">✏️ Edit</button>
+                <button class="btn-delete" onclick="deleteStudent(${s.id})">🗑️ Delete</button>
+            </td>
+        </tr>
+    `;
+  }
+  tbody.innerHTML = rows;
+}
+
+function updateStats() {
+  document.getElementById("statTotal").textContent = studentList.length;
+
+  if (studentList.length === 0) {
+    document.getElementById("statAverage").textContent = "-";
+    document.getElementById("statHighest").textContent = "-";
+    document.getElementById("statLowest").textContent = "-";
+    return;
+  }
+
+  const total = studentList.reduce((acc, s) => acc + s.score, 0);
+  const average = total / studentList.length;
+
+  let highest = studentList[0].score;
+  let lowest = studentList[0].score;
+  for (const s of studentList) {
+    if (s.score > highest) highest = s.score;
+    if (s.score < lowest) lowest = s.score;
+  }
+  document.getElementById("statAverage").textContent = average.toFixed(1);
+  document.getElementById("statHighest").textContent = highest;
+  document.getElementById("statLowest").textContent = lowest;
+}
